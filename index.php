@@ -48,10 +48,6 @@ $resultado = $conexion->query($sql);
                 </td>
 
                 <td>
-                    <?= $taldea["puntuak"] ?>
-                </td>
-
-                <td>
                     <form action="puntuakAldatu.php" method="post">
                         <input type="hidden" name="id" value="<?= $taldea["id"] ?>">
                         <input type="number" name="puntuak" value="<?= $taldea["puntuak"] ?>">
@@ -63,6 +59,13 @@ $resultado = $conexion->query($sql);
                     <form action="taldeEzabatu.php" method="post">
                         <input type="hidden" name="id" value="<?= $taldea["id"] ?>">
                         <input type="submit" value="Ezabatu">
+                    </form>
+                </td>
+
+                <td>
+                    <form action="taldeGogokoena.php" method="post">
+                        <input type="hidden" name="id" value="<?= $taldea["id"] ?>">
+                        <input type="submit" value="Gogokoena">
                     </form>
                 </td>
 
