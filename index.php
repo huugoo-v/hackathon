@@ -1,13 +1,17 @@
 <?php
 
+// konfigurazioa eta klaseak kargatzen dira.
 require_once __DIR__ . "/config/init.php";
 
+// datu-basearekin konektatzen da eta taldeak lortzeko objektua sortzen da.
 $db = (new Database())->conectar();
 
 $taldeaObj = new Taldea($db);
 
+// sailkapenean erakusteko talde guztiak eskuratzen dira.
 $taldeak = $taldeaObj->guztiak();
 
+// saioan gordetako gogoko taldea bilatzen da, baldin badago.
 $favoritoa = $_SESSION["taldea_favorita"] ?? null;
 $favoritoaTaldea = null;
 
@@ -27,10 +31,12 @@ if ($favoritoa !== null) {
 
 <body>
 
+    <!-- orriaren izenburua eta taldeen sailkapena erakusten dira. -->
     <h1>Sailkapena</h1>
 
     <?php mostrarMensaje(); ?>
 
+    <!-- taulan taldeak, puntuazioak eta ekintzak erakusten dira. -->
     <table border="1">
 
         <tr>
@@ -107,6 +113,7 @@ if ($favoritoa !== null) {
 
     </table>
 
+    <!-- formulario honek talde berri bat sortzeko datuak eskatzen ditu. -->
     <h2>Gehitu taldea</h2>
 
     <form action="actions/taldeSortu.php" method="post">

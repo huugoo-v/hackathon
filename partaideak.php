@@ -1,23 +1,28 @@
 <?php
 
+// konfigurazioa eta klaseak kargatzen dira.
 require_once __DIR__ . "/config/init.php";
 
+// datu-basearekin konektatzen da eta taldearen zein partaideen objektuak sortzen dira.
 $db = (new Database())->conectar();
 
 $taldeaObj = new Taldea($db);
 $partaideaObj = new Partaidea($db);
 
+// url-tik zein talderen partaideak erakutsi behar diren jasotzen da.
 $taldeaId = filter_input(
     INPUT_GET,
     "taldea_id",
     FILTER_VALIDATE_INT
 );
 
+// taldearen id-a falta bada edo baliogabea bada, sailkapenera itzultzen da.
 if (!$taldeaId) {
     header("Location: index.php");
     exit;
 }
 
+// aukeratutako taldea datu-basean bilatzen da.
 $taldea = $taldeaObj->bilatu($taldeaId);
 
 if ($taldea === null) {
@@ -25,6 +30,7 @@ if ($taldea === null) {
     exit;
 }
 
+// talde horretako partaideak lortzen dira.
 $partaideak = $partaideaObj->taldekoak($taldeaId);
 
 $favoritoa = $_SESSION["taldea_favorita"] ?? null;
@@ -46,6 +52,7 @@ if ($favoritoa !== null) {
 
 <body>
 
+    <!-- aukeratutako taldearen izena eta partaideen zerrenda erakusten dira. -->
     <h1><?= escapar($taldea["izena"]) ?> - Partaideak</h1>
 
     <?php mostrarMensaje(); ?>
@@ -80,6 +87,7 @@ if ($favoritoa !== null) {
 
     </table>
 
+    <!-- formularioaren bidez partaide berri bat gehitzen da talde honetara. -->
     <h2>Gehitu partaidea</h2>
 
     <form action="actions/partaideaSortu.php" method="post">

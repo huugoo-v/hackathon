@@ -1,15 +1,19 @@
 <?php
 
+// klase honek taldeak kontsultatu, sortu, eguneratu eta ezabatzen ditu.
 class taldea
 {
-    private PDO $db;
+    // datu-basearekiko konexioa gordetzen da.
+private PDO $db;
 
-    public function __construct(PDO $db)
+    // konexioa jasotzen da objektua sortzean.
+public function __construct(PDO $db)
     {
         $this->db = $db;
     }
 
-    public function guztiak(): array
+    // talde guztiak puntuazioaren arabera ordenatuta lortzen dira.
+public function guztiak(): array
     {
         $sql = "SELECT id, izena, puntuak
                 FROM taldea
@@ -20,7 +24,8 @@ class taldea
             ->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function bilatu(int $id): ?array
+    // id jakin bateko taldea bilatzen da.
+public function bilatu(int $id): ?array
     {
         $stmt = $this->db->prepare(
             "SELECT id, izena, puntuak
@@ -35,7 +40,8 @@ class taldea
         return $taldea ?: null;
     }
 
-    public function sortu(string $izena, int $puntuak): bool
+    // talde berri bat datu-basean gordetzen da.
+public function sortu(string $izena, int $puntuak): bool
     {
         $stmt = $this->db->prepare(
             "INSERT INTO taldea (izena, puntuak)
@@ -48,7 +54,8 @@ class taldea
         ]);
     }
 
-    public function eguneratuPuntuak(
+    // talde baten puntuazioa aldatzen da.
+public function eguneratuPuntuak(
         int $id,
         int $puntuak
     ): bool {
@@ -64,7 +71,8 @@ class taldea
         ]);
     }
 
-    public function ezabatu(int $id): bool
+    // id horretako taldea ezabatzen da.
+public function ezabatu(int $id): bool
     {
         $stmt = $this->db->prepare(
             "DELETE FROM taldea
