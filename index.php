@@ -1,27 +1,35 @@
 <?php
 
-require_once "config/database.php";
+require_once __DIR__ . "/config/init.php";
 
-$database = new Database();
-$conexion = $database->conectar();
+$db = (new Database())->conectar();
 
-$sql = "SELECT * FROM taldea ORDER BY puntuak DESC";
-$resultado = $conexion->query($sql);
+$taldeaObj = new Taldea($db);
+
+$taldeak = $taldeaObj->guztiak();
+
+$favoritoa = $_SESSION["taldea_favorita"] ?? null;
+$favoritoaTaldea = null;
+
+if ($favoritoa !== null) {
+    $favoritoaTaldea = $taldeaObj->bilatu((int)$favoritoa);
+}
 
 ?>
 
 <!DOCTYPE html>
-<html lang="es">
+<html lang="eu">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sailkapena</title>
 </head>
 
 <body>
 
     <h1>Sailkapena</h1>
+
+    <?php mostrarMensaje(); ?>
 
     <table border="1">
 
@@ -31,68 +39,115 @@ $resultado = $conexion->query($sql);
             <th>Puntuak</th>
             <th></th>
             <th></th>
+            <th></th>
         </tr>
 
-        <?php while ($taldea = $resultado->fetch(PDO::FETCH_ASSOC)) { ?>
+        <?php foreach ($taldeak as $taldea): ?>
 
             <tr>
 
                 <td>
-                    <?= $taldea["id"] ?>
+                    <?= (int)$taldea["id"] ?>
                 </td>
 
                 <td>
-                    <a href="partaideak.php?taldea_id=<?= $taldea["id"] ?>">
-                        <?= $taldea["izena"] ?>
+                    <a href="partaideak.php?taldea_id=<?= (int)$taldea["id"] ?>">
+                        <?= escapar($taldea["izena"]) ?>
                     </a>
                 </td>
 
                 <td>
-                    <form action="puntuakAldatu.php" method="post">
-                        <input type="hidden" name="id" value="<?= $taldea["id"] ?>">
-                        <input type="number" name="puntuak" value="<?= $taldea["puntuak"] ?>">
+                    <form action="actions/puntuakEguneratu.php" method="post">
+
+                        <input
+                            type="hidden"
+                            name="id"
+                            value="<?= (int)$taldea["id"] ?>">
+
+                        <input
+                            type="number"
+                            name="puntuak"
+                            value="<?= (int)$taldea["puntuak"] ?>"
+                            min="0">
+
                         <input type="submit" value="Aldatu">
+
                     </form>
                 </td>
 
                 <td>
-                    <form action="taldeEzabatu.php" method="post">
-                        <input type="hidden" name="id" value="<?= $taldea["id"] ?>">
+                    <form action="actions/taldeaEzabatu.php" method="post">
+
+                        <input
+                            type="hidden"
+                            name="id"
+                            value="<?= (int)$taldea["id"] ?>">
+
                         <input type="submit" value="Ezabatu">
+
                     </form>
                 </td>
 
                 <td>
-                    <form action="taldeGogokoena.php" method="post">
-                        <input type="hidden" name="id" value="<?= $taldea["id"] ?>">
+                    <form action="actions/taldeFavoritoa.php" method="post">
+
+                        <input
+                            type="hidden"
+                            name="id"
+                            value="<?= (int)$taldea["id"] ?>">
+
                         <input type="submit" value="Gogokoena">
+
                     </form>
                 </td>
 
             </tr>
 
-        <?php } ?>
+        <?php endforeach; ?>
 
     </table>
 
-
     <h2>Gehitu taldea</h2>
 
-    <form action="taldeSortu.php" method="post">
+    <form action="actions/taldeSortu.php" method="post">
 
         Izena:
-        <input type="text" name="taldeIzena">
+        <input
+            type="text"
+            name="taldeIzena"
+            required>
+
         <br>
         <br>
 
         Puntuak:
-        <input type="number" name="taldePuntuak">
+        <input
+            type="number"
+            name="taldePuntuak"
+            min="0"
+            required>
+
         <br>
         <br>
 
-        <input type="submit" name="taldeSortuBotoi" value="Sortu">
+        <input
+            type="submit"
+            name="taldeSortuBotoi"
+            value="Sortu">
 
     </form>
+
+    <?php if ($favoritoaTaldea !== null): ?>
+
+        <p>
+            Zure talde favoritoa:
+
+            <a href="partaideak.php?taldea_id=<?= (int)$favoritoaTaldea["id"] ?>">
+                <?= escapar($favoritoaTaldea["izena"]) ?>
+            </a>
+        </p>
+
+    <?php endif; ?>
 
 </body>
 
